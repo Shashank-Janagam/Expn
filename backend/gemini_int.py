@@ -6,9 +6,10 @@ from datetime import datetime
 
 # Configure Gemini API
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+print("AVAILABLE MODELS:", [m.name for m in genai.list_models()])
 
 # Correct: create a model instance  
-model = genai.GenerativeModel("gemini-pro")
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 def get_existing_categories(uid):
     categories_ref = db.collection("users").document(uid).collection("categories")
