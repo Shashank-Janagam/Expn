@@ -8,7 +8,7 @@ from datetime import datetime
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 # Correct: create a model instance  
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.5-pro-latest")
 
 def get_existing_categories(uid):
     categories_ref = db.collection("users").document(uid).collection("categories")
