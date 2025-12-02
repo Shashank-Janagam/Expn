@@ -74,6 +74,11 @@ console.log("User ID in Dashboard:", userId);
         timeStamp:new Date().toISOString()
       });
 
+      if (res.data.Status===false){
+        alert("Could not parse expense. Please try again with a different format.");
+        return;
+      }
+
       setExpenseInput("");
       setTotalExp((prevTotal) => prevTotal + (res.data.amount || 0))  ;
     }catch(err){
