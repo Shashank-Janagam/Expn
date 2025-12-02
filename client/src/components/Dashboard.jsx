@@ -11,7 +11,7 @@ function Dashboard() {
   const [expenseInput, setExpenseInput] = useState('');
   const navigate = useNavigate();
 
-  const [totalExp,setTotalExp]=useState(0);
+  const [totalExp,setTotalExp]=useState("--");
 const [userId, setUserId] = useState("");  // ✅
 
 useEffect(() => {
