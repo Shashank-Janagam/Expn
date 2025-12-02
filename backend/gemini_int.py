@@ -3,8 +3,8 @@ import json
 from firebase_config import db
 from datetime import datetime
 
-client = genai.Client(api_key="AIzaSyB18-oAXbC6Y26-QZb-0jMy2EGd6RV2rig")
-
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+client = genai.Client()
 def get_existing_categories(uid):
     """Fetch all categories for a user from Firestore"""
     categories_ref = db.collection("users").document(uid).collection("categories")
