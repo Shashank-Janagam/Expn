@@ -117,11 +117,11 @@ function Category() {
                   {categoryData.transactions && categoryData.transactions.length > 0 ? (
                     categoryData.transactions.map((t, idx) => (
                       <li key={idx} className="transaction-item">
+                        <span className="transaction-date">{formatDate(t.timestamp)}</span>
                         <span className="transaction-name">{t.name}</span>
                         {t.merchant && (
                           <span className="transaction-merchant">{t.merchant}</span>
                         )}
-                        <span className="transaction-date">{formatDate(t.timestamp)}</span>
                         <span className="transaction-amount">{formatCurrency(t.expense)}</span>
                       </li>
                     ))
