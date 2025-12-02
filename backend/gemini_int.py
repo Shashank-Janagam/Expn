@@ -80,16 +80,105 @@ def parse_expense(uid, text):
         categories_list = ", ".join(existing_categories) if existing_categories else "None yet"
 
         prompt = f"""
-        Extract expense details and return JSON only.
-        Text: '{text}'
+        You are an expense-parsing AI. Your ONLY task is to extract expense data.
+        OUTPUT must ALWAYS be VALID JSON ONLY.
 
-        JSON keys: name, amount, category, merchant, date, currency, related.
-        - Today's date: {datetime.now().strftime("%Y-%m-%d")}
-        - Default currency: INR
-        - If date missing → infer
-        - If unrelated → related: False
-        - Existing categories: [{categories_list}]
+        USER TEXT: '{text}'
+
+        ==========================
+        CATEGORY MATCHING RULES
+        ==========================
+        Existing categories: [{categories_list}]
+
+        RULES:
+        1. ALWAYS match the category with existing categories if the meaning is even close.
+        2. If no close match exists, then create a new category — but only as a last resort.
+        3. Prefer broad common categories like:
+        - Food
+        - Groceries
+        - Travel
+        - Shopping
+        - Utilities
+        - Entertainment
+
+        ==========================
+        RELATED CHECK RULES
+        ==========================
+        "related": true when:
+        - The text expresses spending / paying / buying / costing / amount / price.
+
+        "related": false when:
+        - It has NOTHING to do with money or purchase.
+
+        ==========================
+        AMOUNT RULES
+        ==========================
+        - Convert words into numbers (e.g., "hundred" → 100)
+        - Keep only numeric value
+
+        ==========================
+        DEFAULTS
+        ==========================
+        - date = today's date if missing ({datetime.now().strftime("%Y-%m-%d")})
+        - currency = INR
+        - merchant = null if unknown
+
+        ==========================
+        JSON SCHEMA
+        ==========================
+        {{
+        "name": string,
+        "amount": number,
+        "category": string,
+        "merchant": string|null,
+        "date": "YYYY-MM-DD",
+        "currency": "INR",
+        "related": boolean
+        }}
+
+        ==========================
+        EXAMPLES
+        ==========================
+
+        Input: "spent 10 for milk"
+        Output:
+        {{
+        "name": "milk",
+        "amount": 10,
+        "category": "Groceries",
+        "merchant": null,
+        "date": "{datetime.now().strftime("%Y-%m-%d")}",
+        "currency": "INR",
+        "related": true
+        }}
+
+        Input: "spent hundred for lunch"
+        Output:
+        {{
+        "name": "lunch",
+        "amount": 100,
+        "category": "Food",
+        "merchant": null,
+        "date": "{datetime.now().strftime("%Y-%m-%d")}",
+        "currency": "INR",
+        "related": true
+        }}
+
+        Input: "Is it going to rain today?"
+        Output:
+        {{
+        "name": "",
+        "amount": 0,
+        "category": "",
+        "merchant": null,
+        "date": "{datetime.now().strftime("%Y-%m-%d")}",
+        "currency": "INR",
+        "related": false
+        }}
+
+        Return ONLY the JSON. No explanation.
         """
+
 
         # Correct new API call
         response = model.generate_content(prompt)
@@ -122,4 +211,4 @@ def parse_expense(uid, text):
 
     except Exception as e:
         print(f"Error parsing expense: {e}")
-        return None
+        return False
