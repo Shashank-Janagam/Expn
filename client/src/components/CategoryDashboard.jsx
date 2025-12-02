@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../styles/Category.css";
 import axios from "axios";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { Helmet } from "react-helmet";
 
 function Category() {
   const [categories, setCategories] = useState({});
@@ -66,6 +67,15 @@ function Category() {
     .reduce((sum, cat) => sum + (cat.total || 0), 0);
 
   return (
+
+      <>
+     <Helmet>
+          <link rel="icon" type="/image/png" href="logo.png" />
+
+        <title>Categories • Expn</title>
+      </Helmet>
+
+    
     <div className="category-dashboard">
       <div className="dashboard-header">
         <h1>Spending Overview</h1>
@@ -131,6 +141,7 @@ function Category() {
         )}
       </div>
     </div>
+    </>
   );
 }
 

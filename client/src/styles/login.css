@@ -4,6 +4,17 @@
   align-items: center;
   padding: 2rem;
 }
+.login-page {
+  height: 100vh;
+  width: 100vw;
+  background: url("./back.png") no-repeat center center fixed;
+  background-size: cover;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
 .google-login-button {
   display: flex;

@@ -4,6 +4,7 @@ import '../styles/Home.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { Helmet } from "react-helmet";
 
 function Dashboard() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -85,6 +86,14 @@ console.log("User ID in Dashboard:", userId);
     navigate("/Category",{state:{ userId }});
   };
   return (
+      <>
+      <Helmet>
+        <link rel="icon" href="./logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+        <title>Dashboard • Expn</title>
+      </Helmet>
+
+
     
 
     <div className="home-container">
@@ -201,6 +210,8 @@ console.log("User ID in Dashboard:", userId);
         </div>
       </main>
     </div>
+
+    </>
   );
 }
 

@@ -3,6 +3,7 @@ import '../styles/login.css';
 import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from "react-helmet";
 
 const GoogleLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +49,17 @@ const GoogleLogin = () => {
   };
 
   return (
+
+    <>
+     <Helmet>
+              <link rel="icon" type="image/png" href="logo.png" />
+
+        <title>Login • Expn</title>
+      </Helmet>
+
+    
+      <div className="login-page">
+
     <div className="login-page">
       <div className="logo">Expn</div>
       <button 
@@ -70,6 +82,9 @@ const GoogleLogin = () => {
         </span>
       </button>
     </div>
+    </div>
+
+    </>
   );
 };
 
