@@ -64,7 +64,7 @@ def add_expense():
     data = request.json
 
     res=parse_expense(data["uid"],data["text"])
-    return jsonify(res)
+    return jsonify({"amount": res})
 
 @app.route("/get_expenses", methods=["GET"])
 def get_expenses():

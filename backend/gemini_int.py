@@ -118,7 +118,7 @@ def parse_expense(uid, text):
         update_category_totals(uid, category, amount, currency, expense_date)
         update_user_monthly_total(uid, amount, expense_date)
 
-        return True
+        return amount
 
     except Exception as e:
         print(f"Error parsing expense: {e}")

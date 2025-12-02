@@ -68,13 +68,14 @@ console.log("User ID in Dashboard:", userId);
     const text=expenseInput;
     setExpenseInput("");
     try{
-      axios.post("https://expn-backend.onrender.com/add_expense",{
+      const res=await axios.post("https://expn-backend.onrender.com/add_expense",{
         text:text,
         uid:userId,
         timeStamp:new Date().toISOString()
       });
 
       setExpenseInput("");
+      setTotalExp((prevTotal) => prevTotal + (res.data.amount || 0))  ;
     }catch(err){
       console.error("Error adding expense:", err);
     }
