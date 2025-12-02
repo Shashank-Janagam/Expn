@@ -12,31 +12,18 @@ from getData import get_category_totals_and_transactions
 app = Flask(__name__)
 CORS(app)
 
-# Load Google OAuth JSON config
-with open("OAuth.json") as f:
-    google_config = json.load(f)["installed"]
+# # Load Google OAuth JSON config
+# with open("OAuth.json") as f:
+#     google_config = json.load(f)["installed"]
 
-CLIENT_ID = google_config["client_id"]
-CLIENT_SECRET = google_config["client_secret"]
-REDIRECT_URI = "http://localhost:5000/oauth2callback"
-TOKEN_URI = google_config["token_uri"]
-SCOPES = "https://www.googleapis.com/auth/gmail.readonly"
+# CLIENT_ID = google_config["client_id"]
+# CLIENT_SECRET = google_config["client_secret"]
+# REDIRECT_URI = "http://localhost:5000/oauth2callback"
+# TOKEN_URI = google_config["token_uri"]
+# SCOPES = "https://www.googleapis.com/auth/gmail.readonly"
 
 # ------------------ Firebase Token Verification ------------------
-def verify_user():
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        return None
-    parts = auth_header.split(" ")
-    if len(parts) != 2 or parts[0] != "Bearer":
-        return None
-    id_token = parts[1]
-    try:
-        decoded = auth.verify_id_token(id_token)
-        return decoded["uid"]
-    except Exception as e:
-        print("Token verification failed:", e)
-        return None
+
 
 # ------------------ Login Verification ------------------
 @app.route("/verify_login", methods=["POST"])
@@ -65,54 +52,11 @@ def verify_login():
         return jsonify({"error": str(e)}), 400
 
 # ------------------ Gmail Consent Flow ------------------
-@app.route("/get_gmail_consent/<uid>")
-def get_gmail_consent(uid):
-    auth_url = (
-        f"https://accounts.google.com/o/oauth2/auth"
-        f"?client_id={CLIENT_ID}"
-        f"&redirect_uri={REDIRECT_URI}"
-        f"&response_type=code"
-        f"&scope={SCOPES}"
-        f"&access_type=offline"
-        f"&prompt=consent"
-        f"&state={uid}"
-    )
-    return redirect(auth_url)
 
-@app.route("/oauth2callback")
-def oauth2callback():
-    code = request.args.get("code")
-    uid = request.args.get("state")
-    if not code or not uid:
-        return "Missing code or state", 400
 
-    # Exchange code for refresh token
-    data = {
-        "code": code,
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-        "redirect_uri": REDIRECT_URI,
-        "grant_type": "authorization_code",
-    }
-    r = requests.post(TOKEN_URI, data=data)
-    token_info = r.json()
-    refresh_token = token_info.get("refresh_token")
 
-    if not refresh_token:
-        return "Failed to get refresh token", 400
-
-    db.collection("users").document(uid).set({"gmail_refresh_token": refresh_token}, merge=True)
-    return "Refresh token saved! You can close this page."
 
 # ------------------ Check Gmail Token ------------------
-@app.route("/check_gmail_token", methods=["GET"])
-def check_gmail_token():
-    uid = verify_user()
-    if not uid:
-        return jsonify({"error": "Unauthorized"}), 401
-    user_doc = db.collection("users").document(uid).get()
-    has_access = "gmail_refresh_token" in user_doc.to_dict() if user_doc.exists else False
-    return jsonify({"hasGmailAccess": has_access})
 
 # ------------------ Expense Routes ------------------
 @app.route("/add_expense", methods=["POST"])

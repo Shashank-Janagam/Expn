@@ -1,6 +1,6 @@
 // import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './components/GoogleLoginButton';
+import LoginPage from './components/GoogleLoginButton.js';
 import DashboardPage from './components/Dashboard.jsx';
 import Category from './components/CategoryDashboard.jsx'
 

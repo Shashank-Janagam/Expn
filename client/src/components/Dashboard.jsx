@@ -50,11 +50,12 @@ useEffect(() => {
 
 console.log("User ID in Dashboard:", userId);
   const navigateToProfile = () => {
-    navigate('/Profile');
     setIsProfileMenuOpen(false);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("uid");
+    navigate('/');
     console.log("Logging out...");
     // Add logout logic
   };
@@ -66,7 +67,7 @@ console.log("User ID in Dashboard:", userId);
     const text=expenseInput;
     setExpenseInput("");
     try{
-      const respo=await axios.post("http://127.0.0.1:5000/add_expense",{
+      axios.post("http://127.0.0.1:5000/add_expense",{
         text:text,
         uid:userId,
         timeStamp:new Date().toISOString()

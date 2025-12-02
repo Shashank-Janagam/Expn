@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/login.css';
 import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
@@ -7,6 +7,15 @@ import { useNavigate } from 'react-router-dom';
 const GoogleLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    const savedID=localStorage.getItem("uid");
+
+    if (savedID){
+      navigate('/Dashboard', { state: { uid: savedID } });
+    }
+  },[navigate]);
+  
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -24,16 +33,9 @@ const GoogleLogin = () => {
       if (!verifyData.success) { alert("Login failed!"); return; }
       const uid = verifyData.uid;
 
-      const tokenResp = await fetch("http://127.0.0.1:5000/check_gmail_token", {
-        method: "GET",
-        headers: { "Authorization": `Bearer ${idToken}` },
-      });
-      const tokenData = await tokenResp.json();
+      localStorage.setItem("uid", uid);
 
-      if (!tokenData.hasGmailAccess) {
-        window.location.href = `http://127.0.0.1:5000/get_gmail_consent/${uid}`;
-        return;
-      }
+
 
       navigate('/Dashboard', { state: { uid } });
 

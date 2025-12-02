@@ -13,7 +13,7 @@ function Category() {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   });
 
-  const [userId, setUserId] = useState("");  
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     const auth = getAuth();
@@ -33,10 +33,11 @@ function Category() {
       day: "numeric",
     });
 
-  // Refetch whenever userId or selectedMonth changes
+  // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       if (!userId) return;
+
       try {
         setLoading(true);
         setError(null);
@@ -55,10 +56,14 @@ function Category() {
     };
 
     fetchCategories();
-  }, [userId, selectedMonth]); // ✅ Add selectedMonth here
+  }, [userId, selectedMonth]);
 
   if (loading) return <p className="loading">Loading categories...</p>;
   if (error) return <p className="error">{error}</p>;
+
+  // ⭐ NEW: Calculate Total for selected month
+  const totalForMonth = Object.values(categories)
+    .reduce((sum, cat) => sum + (cat.total || 0), 0);
 
   return (
     <div className="category-dashboard">
@@ -77,35 +82,46 @@ function Category() {
         </div>
       </div>
 
+      {/* ⭐ NEW: Total Card */}
+      <div className="total-card">
+        <h2>Total Spending</h2>
+        <p className="total-value">{formatCurrency(totalForMonth)}</p>
+        <p className="total-month">
+          for {new Date(selectedMonth).toLocaleString("en-US", { month: "long", year: "numeric" })}
+        </p>
+      </div>
+
       <div className="categories-grid">
         {Object.entries(categories)
-            .filter(([_, categoryData]) => categoryData.total > 0) // ✅ skip zero totals
-            .map(([categoryName, categoryData]) => (
-              <div key={categoryName} className="category-card">
-                <div className="card-header">
-                  <h2 className="category-name">{categoryName}</h2>
-                  <span className="total-amount">{formatCurrency(categoryData.total)}</span>
-            </div>
+          .filter(([_, categoryData]) => categoryData.total > 0)
+          .map(([categoryName, categoryData]) => (
+            <div key={categoryName} className="category-card">
+              <div className="card-header">
+                <h2 className="category-name">{categoryName}</h2>
+                <span className="total-amount">{formatCurrency(categoryData.total)}</span>
+              </div>
 
-            <div className="transactions-section">
-              <h3>Transactions</h3>
-              <ul className="scrollable">
-                {categoryData.transactions && categoryData.transactions.length > 0 ? (
-                  categoryData.transactions.map((t, idx) => (
-                    <li key={idx} className="transaction-item">
-                      <span className="transaction-name">{t.name}</span>
-                      {t.merchant && <span className="transaction-merchant">{t.merchant}</span>}
-                      <span className="transaction-date">{formatDate(t.timestamp)}</span>
-                      <span className="transaction-amount">{formatCurrency(t.expense)}</span>
-                    </li>
-                  ))
-                ) : (
-                  <li className="no-transactions">No transactions</li>
-                )}
-              </ul>
+              <div className="transactions-section">
+                <h3>Transactions</h3>
+                <ul className="scrollable">
+                  {categoryData.transactions && categoryData.transactions.length > 0 ? (
+                    categoryData.transactions.map((t, idx) => (
+                      <li key={idx} className="transaction-item">
+                        <span className="transaction-name">{t.name}</span>
+                        {t.merchant && (
+                          <span className="transaction-merchant">{t.merchant}</span>
+                        )}
+                        <span className="transaction-date">{formatDate(t.timestamp)}</span>
+                        <span className="transaction-amount">{formatCurrency(t.expense)}</span>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="no-transactions">No transactions</li>
+                  )}
+                </ul>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
 
         {Object.keys(categories).length === 0 && (
           <div className="empty-state">
