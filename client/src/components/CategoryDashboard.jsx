@@ -43,7 +43,7 @@ function Category() {
         setError(null);
 
         const response = await axios.get(
-          `http://127.0.0.1:5000/get_categories?uid=${userId}&month=${selectedMonth}`
+          `https://expn-backend.onrender.com/get_categories?uid=${userId}&month=${selectedMonth}`
         );
 
         setCategories(response.data);

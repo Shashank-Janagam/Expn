@@ -24,7 +24,7 @@ const GoogleLogin = () => {
       const user = result.user;
       const idToken = await user.getIdToken();
 
-      const verifyResp = await fetch("http://127.0.0.1:5000/verify_login", {
+      const verifyResp = await fetch("https://expn-backend.onrender.com/verify_login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),

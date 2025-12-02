@@ -20,7 +20,7 @@ useEffect(() => {
     try {
       const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
       const res = await axios.get(
-        `http://127.0.0.1:5000/get_user_month_total?uid=${userId}&month=${currentMonth}`
+        `https://expn-backend.onrender.com/get_user_month_total?uid=${userId}&month=${currentMonth}`
       );
       setTotalExp(res.data.total || 0);
     } catch (err) {
@@ -67,7 +67,7 @@ console.log("User ID in Dashboard:", userId);
     const text=expenseInput;
     setExpenseInput("");
     try{
-      axios.post("http://127.0.0.1:5000/add_expense",{
+      axios.post("https://expn-backend.onrender.com/add_expense",{
         text:text,
         uid:userId,
         timeStamp:new Date().toISOString()
