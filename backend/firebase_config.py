@@ -1,11 +1,11 @@
 import os
 import json
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials, firestore
 
 # Load .env file
-load_dotenv()
+# load_dotenv()
 
 service_account = json.loads(os.environ["FIREBASE_CONFIG"])
 cred = credentials.Certificate(service_account)
