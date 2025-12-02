@@ -1,4 +1,3 @@
-from google import genai
 from firebase_config import db
 from datetime import datetime
 from firebase_admin import firestore
@@ -18,24 +17,26 @@ def get_category_totals_and_transactions(uid, month):
     for doc in docs:
         cat_name = doc.id
 
-        # Fetch month total directly
+        # Fetch month total
         month_snap = doc.collection("months").document(month).get()
         month_data = month_snap.to_dict() or {}
         total = month_data.get("total_amount", 0)
 
+        # Skip categories with no spending this month
         if total == 0:
-            # Skip categories with zero total
             continue
 
-        # Firestore query: only get transactions in this month
+        # Query transactions for this month
         start_date = f"{month}-01"
         end_date = f"{month}-31"
 
-        exp_query = doc.collection("expenses") \
-                    .where(field_path="date", op_string=">=", value=start_date) \
-                    .where(field_path="date", op_string="<=", value=end_date) \
-                    .order_by("date", direction=firestore.Query.DESCENDING) \
-                    .stream()
+        exp_query = (
+            doc.collection("expenses")
+            .where("date", ">=", start_date)
+            .where("date", "<=", end_date)
+            .order_by("date", direction=firestore.Query.DESCENDING)
+            .stream()
+        )
 
         transactions = []
         for exp in exp_query:
@@ -51,6 +52,9 @@ def get_category_totals_and_transactions(uid, month):
                 "merchant": data.get("merchant"),
             })
 
-        categories[cat_name] = {"total": total, "transactions": transactions}
+        categories[cat_name] = {
+            "total": total,
+            "transactions": transactions
+        }
 
     return categories

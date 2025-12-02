@@ -5,9 +5,9 @@ from firebase_config import db
 from datetime import datetime
 
 # Configure Gemini API
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+genai.configure(api_key=os.env  iron["GEMINI_API_KEY"])
 
-# Correct: create a model instance
+# Correct: create a model instance  
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 def get_existing_categories(uid):
