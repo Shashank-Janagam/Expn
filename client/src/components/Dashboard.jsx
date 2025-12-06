@@ -3,7 +3,7 @@ import { User, DollarSign, BarChart2, List, PlusCircle } from 'lucide-react';
 import '../styles/Home.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { Helmet } from "react-helmet";
 
 function Dashboard() {
@@ -12,7 +12,9 @@ function Dashboard() {
   const navigate = useNavigate();
 
   const [totalExp,setTotalExp]=useState("--");
-const [userId, setUserId] = useState("");  // ✅
+const [userId, setUserId] = useState(null);  // ✅
+
+  
 
 useEffect(() => {
   if (!userId) return;
@@ -39,11 +41,9 @@ useEffect(() => {
 useEffect(() => {
   const auth = getAuth();
   const unsubscribe = onAuthStateChanged(auth, (user) => {
-    if (user) {
-      setUserId(user.uid);  // ✅ set Firebase UID
-    } else {
-      setUserId("");
-    }
+
+    setUserId(user ? user.uid : "");  // ✅
+
   });
 
   return () => unsubscribe();
@@ -54,10 +54,21 @@ console.log("User ID in Dashboard:", userId);
     setIsProfileMenuOpen(false);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("uid");
-    navigate('/');
-    console.log("Logging out...");
+  if (userId === null) {
+  return <div className="loading">Loading...</div>;
+}
+
+  const handleLogout = async   () => {
+
+    const auth=getAuth();
+    try{
+      await signOut(auth);
+      navigate('/');
+
+    }catch(err){
+      console.error("Error during sign out:",err);
+    }
+
     // Add logout logic
   };
 
@@ -89,7 +100,7 @@ console.log("User ID in Dashboard:", userId);
     setExpenseInput('');
   };
   const goToCategories = () => {
-    navigate("/Category",{state:{ userId }});
+    navigate("/Category");
   };
   return (
       <>

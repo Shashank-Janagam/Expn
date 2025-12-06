@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/login.css';
 import { auth, provider } from "../firebase";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup,onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 
@@ -10,11 +10,15 @@ const GoogleLogin = () => {
   const navigate = useNavigate();
 
   useEffect(()=>{
-    const savedID=localStorage.getItem("uid");
 
-    if (savedID){
-      navigate('/Dashboard', { state: { uid: savedID } });
-    }
+    const unsubscribe=onAuthStateChanged(auth,(user)=>{
+      if(user){
+        navigate('/Dashboard')
+      }
+    });
+
+    return()=> unsubscribe();
+
   },[navigate]);
   
 
@@ -34,7 +38,6 @@ const GoogleLogin = () => {
       if (!verifyData.success) { alert("Login failed!"); return; }
       const uid = verifyData.uid;
 
-      localStorage.setItem("uid", uid);
 
 
 
